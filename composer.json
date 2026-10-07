@@ -1,0 +1,26 @@
+{
+    "name": "jonaspardon/wn-pulse-plugin",
+    "type": "winter-plugin",
+    "description": "Laravel Pulse for Winter CMS: routing, backend access, Winter users and exceptions wired up",
+    "keywords": ["winter", "wintercms", "laravel", "pulse", "monitoring", "performance"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Jonas Pardon"
+        }
+    ],
+    "require": {
+        "php": "^8.2",
+        "composer/installers": "~1.0 || ^2.0",
+        "winter/storm": "^1.3",
+        "laravel/pulse": "^1.8"
+    },
+    "extra": {
+        "installer-name": "pulse"
+    },
+    "config": {
+        "allow-plugins": {
+            "composer/installers": true
+        }
+    }
+}

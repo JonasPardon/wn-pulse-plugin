@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    bootstrap="../../../modules/system/tests/bootstrap/app.php"
+    backupGlobals="false"
+    backupStaticProperties="false"
+    colors="true"
+    processIsolation="false"
+    stopOnFailure="false"
+    xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/11.5/phpunit.xsd"
+>
+    <testsuites>
+        <testsuite name="JonasPardon.Pulse">
+            <directory>./tests</directory>
+        </testsuite>
+    </testsuites>
+    <php>
+        <env name="APP_ENV" value="testing"/>
+        <env name="CACHE_DRIVER" value="array"/>
+        <env name="SESSION_DRIVER" value="array"/>
+    </php>
+</phpunit>
