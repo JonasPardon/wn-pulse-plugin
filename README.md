@@ -39,6 +39,18 @@ Which signed-in user a request is attributed to is set in `config/config.php`, a
 
 User keys are stored with their source (`frontend:12`, `backend:3`), because the two tables share ids. Frontend users need the Winter.User plugin, and the source is skipped without it.
 
+## Cards
+
+Pulse card packages register their Livewire components from a service provider that Laravel finds through package discovery, which Winter turns off. List the provider of each card package in `config/jonaspardon/pulse/config.php`:
+
+```php
+'providers' => [
+    \Maantje\Pulse\Database\DatabaseServiceProvider::class,
+],
+```
+
+The provider's class name is in the card package's `composer.json`, under `extra.laravel.providers`. Cards that bring a recorder also need it added to `recorders` in `config/pulse.php`, as their README describes.
+
 ## MySQL 9.6
 
 MySQL 9.6 no longer allows `md5()` in generated columns, which Pulse's own migration relies on. On MySQL this plugin creates `key_hash` as a plain column and fills it from PHP, the same approach as the upstream fix in [laravel/pulse#495](https://github.com/laravel/pulse/pull/495). This works on MySQL 8 too. MariaDB, PostgreSQL and SQLite keep Pulse's own schema.

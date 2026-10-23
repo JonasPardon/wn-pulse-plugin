@@ -8,6 +8,7 @@ use Backend\Facades\BackendAuth;
 use Cms\Classes\CmsController;
 use Illuminate\Routing\Route;
 use Illuminate\Routing\Router;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use JonasPardon\Pulse\Classes\PulseServiceProvider;
@@ -41,6 +42,7 @@ class Plugin extends PluginBase
     {
         $this->app->register(LivewireServiceProvider::class);
         $this->app->register(PulseServiceProvider::class);
+        $this->registerCardProviders();
 
         // Livewire autowires its Redirector, which needs the concrete UrlGenerator
         // that Winter doesn't alias to `url`. Laravel builds its own the same way.
@@ -90,6 +92,20 @@ class Plugin extends PluginBase
                 'order' => 600,
             ],
         ];
+    }
+
+    /**
+     * Pulse card packages ship a provider for package discovery, which Winter
+     * turns off. A provider whose package isn't installed yet is skipped, so a
+     * deploy that lands the config before `composer install` keeps working.
+     */
+    private function registerCardProviders(): void
+    {
+        foreach ((array) Config::get('jonaspardon.pulse::providers', []) as $provider) {
+            if (class_exists($provider)) {
+                $this->app->register($provider);
+            }
+        }
     }
 
     /**
