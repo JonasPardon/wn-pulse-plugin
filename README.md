@@ -39,7 +39,9 @@ Which signed-in user a request is attributed to is set in `config/config.php`, a
 
 User keys are stored with their source (`frontend:12`, `backend:3`), because the two tables share ids. Frontend users need the Winter.User plugin, and the source is skipped without it.
 
-## Cards
+## Dashboard and cards
+
+Customise the dashboard the way Pulse documents it: run `php artisan vendor:publish --tag=pulse-dashboard` and edit `resources/views/vendor/pulse/dashboard.blade.php`. The plugin makes Pulse pick up that file, which it otherwise only looks for under Laravel's `view.paths`.
 
 Pulse card packages register their Livewire components from a service provider that Laravel finds through package discovery, which Winter turns off. List the provider of each card package in `config/jonaspardon/pulse/config.php`:
 

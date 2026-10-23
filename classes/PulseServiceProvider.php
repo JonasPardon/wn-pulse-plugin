@@ -37,6 +37,24 @@ class PulseServiceProvider extends BasePulseServiceProvider
         $this->swapConfiguredClasses();
     }
 
+    public function boot(): void
+    {
+        parent::boot();
+
+        $this->preferPublishedViews(resource_path('views/vendor/pulse'));
+    }
+
+    /**
+     * `vendor:publish --tag=pulse-dashboard` publishes here, but Pulse only looks
+     * for overrides under `view.paths`, which Winter leaves empty.
+     */
+    public function preferPublishedViews(string $path): void
+    {
+        if (is_dir($path)) {
+            $this->app->make('view')->prependNamespace('pulse', $path);
+        }
+    }
+
     /**
      * Leaves any class the app configured itself alone.
      */
