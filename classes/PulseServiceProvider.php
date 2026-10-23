@@ -44,11 +44,13 @@ class PulseServiceProvider extends BasePulseServiceProvider
 
         $recorders = $config->get('pulse.recorders', []);
 
+        // The dashboard card still reads threshold and sample_rate from Pulse's
+        // own entry, so that one stays, switched off so it doesn't record twice.
         if (array_key_exists(PulseSlowRequests::class, $recorders)) {
             $recorders[SlowRequests::class] = $recorders[PulseSlowRequests::class] + [
                 'groups' => ['#/\d+(?=/|$)#' => '/*'],
             ];
-            unset($recorders[PulseSlowRequests::class]);
+            $recorders[PulseSlowRequests::class]['enabled'] = false;
         }
 
         $config->set('pulse.recorders', $recorders);

@@ -24,8 +24,14 @@ class ConfigTest extends PulseTestCase
         $this->assertNotContains(PulseAuthorize::class, config('pulse.middleware'));
 
         $this->assertArrayHasKey(SlowRequests::class, config('pulse.recorders'));
-        $this->assertArrayNotHasKey(PulseSlowRequests::class, config('pulse.recorders'));
         $this->assertSame(1000, (int) config('pulse.recorders.' . SlowRequests::class . '.threshold'));
+    }
+
+    public function test_pulses_own_slow_requests_entry_stays_readable_for_the_dashboard_but_records_nothing(): void
+    {
+        $this->assertSame(1000, (int) config('pulse.recorders.' . PulseSlowRequests::class . '.threshold'));
+        $this->assertEquals(1, config('pulse.recorders.' . PulseSlowRequests::class . '.sample_rate'));
+        $this->assertFalse(config('pulse.recorders.' . PulseSlowRequests::class . '.enabled'));
     }
 
     public function test_bindings_point_at_the_winter_implementations(): void
