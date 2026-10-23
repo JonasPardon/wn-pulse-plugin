@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use JonasPardon\Pulse\Classes\PulseServiceProvider;
 use Laravel\Pulse\Facades\Pulse as PulseFacade;
+use Livewire\Features\SupportRedirects\Redirector;
 use Livewire\LivewireServiceProvider;
 use System\Classes\PluginBase;
 use System\Classes\SettingsManager;
@@ -40,6 +41,10 @@ class Plugin extends PluginBase
     {
         $this->app->register(LivewireServiceProvider::class);
         $this->app->register(PulseServiceProvider::class);
+
+        // Livewire autowires its Redirector, which needs the concrete UrlGenerator
+        // that Winter doesn't alias to `url`. Laravel builds its own the same way.
+        $this->app->bind(Redirector::class, fn ($app): Redirector => new Redirector($app['url']));
 
         Event::listen('cms.route', function (): void {
             static::demoteCmsCatchAll($this->app->make(Router::class));
