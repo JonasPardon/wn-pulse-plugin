@@ -18,6 +18,13 @@ use Laravel\Pulse\Recorders\SlowRequests as PulseSlowRequests;
  */
 class PulseServiceProvider extends BasePulseServiceProvider
 {
+    /**
+     * Numeric ids, Winter.User reset and activation codes (`12!aBc...`) and
+     * other token-like segments, so neither row counts nor secrets leak into
+     * the dashboard. Pulse applies only the first matching group, hence one regex.
+     */
+    private const FOLDED_SEGMENTS = '#/(?:\d+|[^/]*(?:!|%21)[^/]*|[A-Za-z0-9]{32,})(?=/|$)#';
+
     public function register(): void
     {
         parent::register();
@@ -48,7 +55,7 @@ class PulseServiceProvider extends BasePulseServiceProvider
         // own entry, so that one stays, switched off so it doesn't record twice.
         if (array_key_exists(PulseSlowRequests::class, $recorders)) {
             $recorders[SlowRequests::class] = $recorders[PulseSlowRequests::class] + [
-                'groups' => ['#/\d+(?=/|$)#' => '/*'],
+                'groups' => [self::FOLDED_SEGMENTS => '/*'],
             ];
             $recorders[PulseSlowRequests::class]['enabled'] = false;
         }
