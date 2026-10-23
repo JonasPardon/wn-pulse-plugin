@@ -18,17 +18,18 @@ Don't register `Laravel\Pulse\PulseServiceProvider` yourself: the plugin registe
 | Winter behaviour | What breaks in plain Pulse | What the plugin does |
 |---|---|---|
 | Package discovery is disabled | Pulse and Livewire never load | Registers both providers |
-| The CMS `{slug?}` catch-all route is registered first and wins | `/pulse` and the Livewire endpoints render a CMS 404 | Marks the catch-all as a fallback route, so it is tried last |
+| The CMS `{slug?}` catch-all matches every URL, and the first matching route wins | Any route registered after the catch-all renders a CMS 404 instead | Marks the catch-all as a fallback route, so it is tried last whatever the registration order |
 | No Laravel `auth` binding | The usage card and per-user recorders silently record nothing | Attributes work to Winter.User frontend users and backend users |
 | Gate has no user resolver; the dashboard is only for `local` by default | Nobody can open the dashboard on a deployed site | `viewPulse` gate backed by the backend session and a permission |
 | The error page renders an `AuthorizationException` as a 500 | Guests get a 500 instead of a 403 | Middleware that aborts with a 403 |
 | The exception handler overrides `report()` without running `reportable()` callbacks | The exceptions card stays empty | Forwards Winter's `exception.report` event to Pulse |
-| Every CMS and backend page shares one catch-all route | Slow requests collapse into `/{slug?}` | Keys catch-all requests by path, with numeric segments grouped as `*` |
+| Every CMS and backend page shares one catch-all route | Slow requests collapse into `/{slug?}` | Keys catch-all requests by path, with ids, Winter.User reset and activation codes and other token-like segments folded into `*` |
+| `url` is not aliased to Laravel's concrete `UrlGenerator` | Any error during a dashboard update fails again while Livewire builds its redirector | Binds Livewire's redirector to Winter's URL generator |
 | `winter:up` doesn't run package migrations | No tables | Ships the Pulse tables as a plugin migration |
 
 ## Configuration
 
-Pulse's own configuration applies as usual. Publish it with `php artisan vendor:publish --tag=pulse-config` if you need to change it. The plugin swaps Pulse's `Authorize` middleware and `SlowRequests` recorder for its own versions only where the config still names Pulse's classes. Slow requests also accept a `groups` option (regex => replacement) for folding paths.
+Pulse's own configuration applies as usual. Publish it with `php artisan vendor:publish --tag=pulse-config` if you need to change it. The plugin swaps Pulse's `Authorize` middleware and `SlowRequests` recorder for its own versions only where the config still names Pulse's classes. Slow requests also accept a `groups` option (regex => replacement) for folding paths. Pulse applies only the first group that matches, so if you set your own `groups`, include the plugin's default folding pattern (in `classes/PulseServiceProvider.php`) in your regex.
 
 Which signed-in user a request is attributed to is set in `config/config.php`, and can be overridden from the app as `config/jonaspardon/pulse/config.php`:
 
